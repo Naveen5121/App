@@ -35,7 +35,7 @@ const Login = () => {
             <TextInput
               style={styles.input}
               placeholder="9812345678"
-              keyboardType="phone-pad"
+              keyboardType='default'
               placeholderTextColor="#D1D1D1"
             />
           </View>

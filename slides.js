@@ -84,3 +84,55 @@ export const icons = [
     },
     
 ]
+
+export const notices = [
+  {
+    id: '1',
+    title: 'School is going for vacation in next month',
+    date: '08 July 2025',
+    image: require('./src/assets/icons/summer.png'),
+    bgColor: '#DFF6DD',
+  },
+  {
+    id: '2',
+    title: 'Summer Book Fair at School Campus in June',
+    date: '08 July 2025',
+    image: require('./src/assets/icons/bookshelf.png'),
+    bgColor: '#DAEFFF',
+  },
+  {
+    id: '3',
+    title: 'School is going for vacation in next month',
+    date: '08 July 2025',
+    image: require('./src/assets/icons/summer.png'),
+    bgColor: '#FFD9D9',
+  },
+  {
+    id: '4',
+    title: 'School is going for vacation in next month',
+    date: '08 July 2025',
+    image: require('./src/assets/icons/summer.png'),
+    bgColor: '#DFF6DD',
+  },
+  {
+    id: '5',
+    title: 'Summer Book Fair at School Campus in June',
+    date: '08 July 2025',
+    image: require('./src/assets/icons/bookshelf.png'),
+    bgColor: '#DAEFFF',
+  },
+  {
+    id: '6',
+    title: 'School is going for vacation in next month',
+    date: '08 July 2025',
+    image: require('./src/assets/icons/summer.png'),
+    bgColor: '#FFD9D9',
+  },
+  {
+    id: '7',
+    title: 'School is going for vacation in next month',
+    date: '08 July 2025',
+    image: require('./src/assets/icons/summer.png'),
+    bgColor: '#DFF6DD',
+  },
+];

@@ -7,7 +7,7 @@ const OnboardingItem = ({item,scrollToNext,isLast}) => {
   return (
     <View style={[styles.container,{width}]}>
       <ImageBackground source={item.image} style={[styles.image, {width, resizeMode:'contain'}]}>
-      <TouchableOpacity style={[styles.button,{position:'absolute',bottom:'9%',alignSelf:'center'},]} onPress={scrollToNext} activeOpacity={0.7}>
+      <TouchableOpacity style={[styles.button,{position:'absolute',bottom:'9%',alignSelf:'center'},]} onPress={scrollToNext} activeOpacity={1}>
           <Image
             source={
               isLast
