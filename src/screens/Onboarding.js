@@ -11,14 +11,13 @@ const scrollX = useRef(new Animated.Value(0)).current;
 const [currentIndex,setCurrentIndex]=useState(0);
 const flatListRef = useRef();
 
-const scrollToNext = (index) => {
-  if (index < onboardingitems.length - 1) {
-    flatListRef.current.scrollToIndex({ index: index + 1 });
-  } else {
-    
-    console.log('Login..')
-  }
-};
+  const scrollToNext = (index) => {
+    if (index < onboardingitems.length - 1) {
+      flatListRef.current.scrollToIndex({ index: index + 1 });
+    } else {
+      navigation.navigate('Login');  // 👈 Navigate to Login screen
+    }
+  };
 
 const viewableItemsChanged=useRef(({viewableItems})=>{
   setCurrentIndex(viewableItems[0].index);
