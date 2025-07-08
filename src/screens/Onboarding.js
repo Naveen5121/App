@@ -16,7 +16,7 @@ const Onboarding = () => {
     if (index < onboardingitems.length - 1) {
       flatListRef.current.scrollToIndex({ index: index + 1 });
     } else {
-      navigation.navigate('Login');  // 👈 Navigate to Login screen
+      navigation.navigate('Login');  
     }
   };
 
