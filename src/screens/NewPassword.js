@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,36 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const NewPassword = () => {
+  const navigation = useNavigation();
+
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleSubmit = () => {
+    if (newPassword !== confirmPassword) {
+      Alert.alert(
+        'Password Mismatch',
+        'Passwords do not match. Please try again.',
+        [{ text: 'Cancel', style: 'cancel' }],
+        { cancelable: true }
+      );
+    } else {
+      navigation.navigate('Home');
+    }
+  };
+
+  const handleCancel = () => {
+    navigation.navigate('Login');
+  };
+
   return (
     <View style={styles.container}>
-      {/* Top Section with Logo and Title */}
+      {/* Top Section */}
       <ImageBackground
         source={require('../assets/union.png')}
         style={styles.topHalf}
@@ -25,40 +49,39 @@ const NewPassword = () => {
         <Text style={styles.title}>Forgot Password</Text>
       </ImageBackground>
 
-      {/* Bottom Section with Inputs */}
+      {/* Bottom Section */}
       <View style={styles.bottomHalf}>
-        {/* Phone Number Field */}
-        <View>
-            {/* Password Field */}
-            <View style={{ marginTop: 12 }}>
-            <Text style={styles.label}>Create New Password</Text>
-            <TextInput
-                style={styles.inputRow}
-                placeholder="************"
-                placeholderTextColor="#D1D1D1"
-                secureTextEntry
-            />
-            </View>
+        <View style={{ marginTop: 12 }}>
+          <Text style={styles.label}>Create New Password</Text>
+          <TextInput
+            style={styles.inputRow}
+            placeholder="************"
+            placeholderTextColor="#D1D1D1"
+            secureTextEntry
+            value={newPassword}
+            onChangeText={setNewPassword}
+          />
         </View>
 
-        {/* Password Field */}
         <View style={{ marginTop: 12 }}>
           <Text style={styles.label}>Confirm New Password</Text>
           <TextInput
             style={styles.inputRow}
-            placeholder="************" 
+            placeholder="************"
             placeholderTextColor="#D1D1D1"
             secureTextEntry
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
           />
         </View>
 
-        {/* Sign In Button */}
-        <TouchableOpacity style={styles.signInButton}>
+        {/* Submit Button */}
+        <TouchableOpacity style={styles.signInButton} onPress={handleSubmit}>
           <Text style={styles.signInText}>Submit</Text>
         </TouchableOpacity>
 
-        {/* Forgot Password */}
-        <TouchableOpacity>
+        {/* Cancel Button */}
+        <TouchableOpacity onPress={handleCancel}>
           <Text style={styles.forgotText}>Cancel</Text>
         </TouchableOpacity>
       </View>
@@ -85,7 +108,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginTop: 90,
     marginBottom: 20,
-    
   },
   title: {
     fontSize: 34,
@@ -113,17 +135,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
-  },
-  countryCode: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginRight: 8,
-    color: '#000',
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#000',
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
   },
   signInButton: {
     backgroundColor: '#3FAC49',

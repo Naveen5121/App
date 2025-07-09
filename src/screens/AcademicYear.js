@@ -10,13 +10,17 @@ import {
 } from 'react-native';
 import { useState } from 'react';
 import { RadioButton } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 
 
 
 const AcademicYear = () => {
+
+    const navigation = useNavigation();
     const [selectedYear,setSelectedYear]=useState('');
     const years = ['2022-23','2023-24','2024-25','2025-26'];
     const handleSubmit = () => {
+        navigation.goBack();
         console.log('Selected Year:',selectedYear);
     }
 
@@ -29,7 +33,7 @@ const AcademicYear = () => {
         resizeMode="cover"
       >
         <View style={styles.header}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>navigation.goBack()}>
                 <Image source={require('../assets/icons/back.png')} style={{width:36, height:36, marginRight:20 }}/>
             </TouchableOpacity>
             <Text style={styles.headtext}>Select Academic Year</Text>
@@ -39,6 +43,7 @@ const AcademicYear = () => {
       {/* Second Half  */}
       <View style={styles.bottomHalf}>
         <FlatList
+         showsVerticalScrollIndicator={false}
          data={years}
          keyExtractor={(item)=>item}
          renderItem={({item})=>(

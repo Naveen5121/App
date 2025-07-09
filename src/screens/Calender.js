@@ -10,8 +10,10 @@ import {
 import React, { useState, useEffect } from 'react';
 import { Calendar } from 'react-native-calendars';
 import dayjs from 'dayjs';
+import { useNavigation } from '@react-navigation/native';
 
 const Calender = () => {
+  const navigation = useNavigation();
   const [currentDate, setCurrentDate] = useState(dayjs('2025-07-01'));
   const [selectedDate, setSelectedDate] = useState(currentDate.format('YYYY-MM-DD'));
   const [visibleMonth, setVisibleMonth] = useState(currentDate);
@@ -65,7 +67,7 @@ const Calender = () => {
       {/* Header */}
       <ImageBackground source={require('../assets/union.png')} style={styles.topHalf} resizeMode="cover">
         <View style={styles.header}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>navigation.goBack()}>
             <Image source={require('../assets/icons/back.png')} style={{ width: 40, height: 40, marginRight: 20 }} />
           </TouchableOpacity>
           <Text style={styles.headtext}>Calendar</Text>

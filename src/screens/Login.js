@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,33 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const Login = () => {
+  const navigation = useNavigation();
+
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+
+  const VALID_PHONE = '9812345678';
+  const VALID_PASSWORD = '123456';
+
+  const handleLogin = () => {
+    if (phone === VALID_PHONE && password === VALID_PASSWORD) {
+      navigation.navigate('Home');
+    } else {
+      Alert.alert(
+        'Login Failed',
+        'Invalid phone number or password',
+        [{ text: 'Cancel', style: 'cancel' }],
+        { cancelable: true }
+      );
+    }
+  };
+
+
   return (
     <View style={styles.container}>
       {/* Top Section with Logo and Title */}
@@ -18,47 +42,44 @@ const Login = () => {
         style={styles.topHalf}
         resizeMode="cover"
       >
-        <Image
-          source={require('../assets/logo.png')}
-          style={styles.logo}
-        />
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
         <Text style={styles.title}>Sign In</Text>
       </ImageBackground>
 
       {/* Bottom Section with Inputs */}
       <View style={styles.bottomHalf}>
         {/* Phone Number Field */}
-        <View>
-          <Text style={styles.label}>Phone Number</Text>
-          <View style={styles.inputRow}>
-            <Text style={styles.countryCode}>+91</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="9812345678"
-              keyboardType='default'
-              placeholderTextColor="#D1D1D1"
-            />
-          </View>
-        </View>
-
-        {/* Password Field */}
-        <View style={{ marginTop: 12 }}>
-          <Text style={styles.label}>Password</Text>
+        <Text style={styles.label}>Phone Number</Text>
+        <View style={styles.inputRow}>
+          <Text style={styles.countryCode}>+91</Text>
           <TextInput
-            style={styles.inputRow}
-            placeholder="************"
+            style={styles.input}
+            placeholder="9812345678"
+            keyboardType="number-pad"
             placeholderTextColor="#D1D1D1"
-            secureTextEntry
+            value={phone}
+            onChangeText={setPhone}
           />
         </View>
 
+        {/* Password Field */}
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.inputRow}
+          placeholder="************"
+          placeholderTextColor="#D1D1D1"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+
         {/* Sign In Button */}
-        <TouchableOpacity style={styles.signInButton}>
+        <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
           <Text style={styles.signInText}>Sign In</Text>
         </TouchableOpacity>
 
         {/* Forgot Password */}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>navigation.navigate('ForgotPassword')}>
           <Text style={styles.forgotText}>Forgot Password</Text>
         </TouchableOpacity>
       </View>
@@ -85,7 +106,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginTop: 90,
     marginBottom: 20,
-    
   },
   title: {
     fontSize: 34,
@@ -113,23 +133,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
   },
   countryCode: {
     fontSize: 35,
     fontWeight: '800',
     marginRight: 8,
     color: '#000',
-    marginTop:-15
+    marginTop: -15,
   },
   input: {
     flex: 1,
     fontSize: 32,
     color: '#000',
-    marginTop:-13,
+    marginTop: -13,
     fontWeight: '800',
-
   },
-   signInButton: {
+  signInButton: {
     backgroundColor: '#3FAC49',
     paddingVertical: 18,
     borderRadius: 40,

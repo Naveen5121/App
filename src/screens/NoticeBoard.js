@@ -1,16 +1,18 @@
 import { StyleSheet, Text, View,FlatList, Image,ImageBackground,TouchableOpacity,} from 'react-native'
 import React from 'react'
 import { notices } from '../../slides'
-
+import { useNavigation } from '@react-navigation/native'
 
 const NoticeBoard = () => {
+
+  const navigation=useNavigation();
 
   return (
      <View style={styles.container}>
           {/* Header */}
           <ImageBackground source={require('../assets/union.png')} style={styles.topHalf} resizeMode="cover">
             <View style={styles.header}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={()=>navigation.goBack()}>
                 <Image source={require('../assets/icons/back.png')} style={{ width: 40, height: 40, marginRight: 20 }} />
               </TouchableOpacity>
               <Text style={styles.headtext}>Notice Board</Text>
@@ -80,8 +82,8 @@ const styles = StyleSheet.create({
 },
 
   image: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     resizeMode: 'contain',
     marginBottom: 8,
     alignSelf:'flex-start'

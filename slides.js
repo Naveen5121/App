@@ -17,8 +17,8 @@ export const icons = [
     {
         id:1,
         icon : require('./src/assets/icons/home.png'),
-        label:'Dashboard',
-        screen:'Dashboard'
+        label:'Home',
+        screen:'Home'
     },
     {
         id:2,
@@ -42,13 +42,13 @@ export const icons = [
         id:5,
         icon : require('./src/assets/icons/exam.png'),
         label:'Examination',
-        screen:'Exam'
+        screen:'Examination'
     },
     {
         id:6,
         icon : require('./src/assets/icons/reportcard.png'),
-        label:'Report Cards',
-        screen:'ReportCard'
+        label:'Report',
+        screen:'Report'
     },
     {
         id:7,
@@ -136,3 +136,18 @@ export const notices = [
     bgColor: '#DFF6DD',
   },
 ];
+
+export const attendanceData = {
+  '2025-01': { present: 23, absent: 3, leave: 0 },
+  '2025-02': { present: 21, absent: 2, leave: 2 },
+  '2025-03': { present: 24, absent: 1, leave: 0 },
+  '2025-04': { present: 22, absent: 3, leave: 1 },
+  '2025-05': { present: 26, absent: 0, leave: 0 },
+  '2025-06': { present: 25, absent: 1, leave: 1 },
+  '2025-07': { present: 20, absent: 4, leave: 3 },
+  '2025-08': { present: 23, absent: 2, leave: 2 },
+  '2025-09': { present: 22, absent: 3, leave: 1 },
+  '2025-10': { present: 23, absent: 2, leave: 1 },
+  '2025-11': { present: 24, absent: 0, leave: 2 },
+  '2025-12': { present: 25, absent: 0, leave: 1 },
+};

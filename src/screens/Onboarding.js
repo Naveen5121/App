@@ -5,7 +5,7 @@ import { onboardingitems } from '../../slides'
 import OnboardingItem from './OnboardingItem'
 
 
-const Onboarding = () => {
+const Onboarding = ({navigation}) => {
 
 const scrollX = useRef(new Animated.Value(0)).current;
 const [currentIndex,setCurrentIndex]=useState(0);
@@ -15,7 +15,7 @@ const flatListRef = useRef();
     if (index < onboardingitems.length - 1) {
       flatListRef.current.scrollToIndex({ index: index + 1 });
     } else {
-      navigation.navigate('Login');  // 👈 Navigate to Login screen
+      navigation.navigate('Login');  
     }
   };
 

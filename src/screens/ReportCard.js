@@ -1,112 +1,446 @@
 import React from 'react';
 import {
-  View,
-  Text,
   StyleSheet,
-  ImageBackground,
+  Text,
+  View,
   Image,
+  ScrollView,
+  ImageBackground,
   TouchableOpacity,
-  FlatList,
 } from 'react-native';
-import { useState } from 'react';
 
+import { useNavigation } from '@react-navigation/native';
 
+const SectionTitleWithLines = ({ title }) => (
+  <View style={styles.sectionTitleWrapper}>
+    <View style={styles.coloredLine} />
+    <Text style={styles.fullLineTitle}>{title}</Text>
+    <View style={styles.coloredLine} />
+  </View>
+);
 
+const ReportCard = () => {
 
-const AcademicYear = () => {
+    const fields = [
+    'Roll Number',
+    'Date of Birth',
+    'Blood Group',
+    'Emergency Contact',
+    'Position in Class',
+    "Father's Name",
+    "Mother's Name",
+  ];
 
-    const standards = ['Class 7th (2020-21)','Class 8th (2021-22)','Class 9th (2022-23)','Class 10th (2023-24)','Class 11th (2024-25)','Class 12th (2025-26)'];
-    
+  const navigation=useNavigation();
 
   return (
     <View style={styles.container}>
-      {/*Header*/}
+      {/* Header */}
       <ImageBackground
         source={require('../assets/union.png')}
         style={styles.topHalf}
         resizeMode="cover"
       >
         <View style={styles.header}>
-            <TouchableOpacity>
-                <Image source={require('../assets/icons/back.png')} style={{width:40, height:40, marginRight:20 }}/>
-            </TouchableOpacity>
-            <Text style={styles.headtext}>Report Cards</Text>
+          <TouchableOpacity onPress={()=>navigation.goBack()}>
+            <Image
+              source={require('../assets/icons/back.png')}
+              style={{ width: 30, height: 30, marginRight: 10 }}
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Class 12th (2020–21)</Text>
         </View>
       </ImageBackground>
 
-      {/* Second Half  */}
-      <View style={styles.bottomHalf}>
-        <FlatList
-         data={standards}
-         keyExtractor={(item)=>item}
-         renderItem={({item})=>(
-            <View style={styles.row}>
-                <Text style={styles.label}>{item}</Text>
-                <TouchableOpacity
-                  onPress={()=>console.log('Navigate to:',item)}>
-                    <Image source={require('../assets/next.png')} style={{width:24,height:24,}}/>
-                </TouchableOpacity>
-                
-            </View>
-         )}
-        />
+      
 
+      <ScrollView contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.schoolHeader}>
+        <Image
+            source={require('../assets/school-logo.png')} // replace with actual logo path
+            style={styles.schoolLogo}
+        />
+        <View style={styles.schoolDetails}>
+            <Text style={styles.schoolName}>Sanskriti School</Text>
+            <Text style={styles.schoolAddress}>Dr. S. Radhakrishnan Marg, ChanaKyaprui, New Delhi, Delhi - 110021</Text>
+        </View>
       </View>
+        {/* Profile Info */}
+        <View style>
+        <SectionTitleWithLines title="PERFORMANCE PROFILE" />
+        </View>
+        <View style={[styles.bottomHalf,{marginTop:10}]}>
+            
+            <View style={styles.userRow}>
+                <Image
+                  source={require('../assets/icons/user.png')}
+                  style={styles.logo}
+                />
+              <View style={styles.nameclass}>
+                <Text style={styles.title}>Yogitha</Text>
+                <Text style={styles.class}>Class VII B</Text>
+              </View>
+            </View>
+                 {fields.map((label, index) => (
+                   <View style={styles.inputRow} key={index}>
+                     <Text style={styles.label}>{label}</Text>
+                   </View>
+                 ))}
+        </View>
+        {/* Attendance Section */}
+        <SectionTitleWithLines title="ATTENDANCE" />
+
+        <Text style={styles.termTitle}>Term I</Text>
+        <View style={styles.attendanceBox}>
+          <Text style={styles.attendanceText}>235 / 249 Days</Text>
+          <Text style={styles.attendanceSubLabel}>
+            Total attendance of the student
+          </Text>
+        </View>
+
+        <Text style={styles.termTitle}>Term II</Text>
+        <View style={styles.attendanceBox}>
+          <Text style={styles.attendanceText}>235 / 249 Days</Text>
+          <Text style={styles.attendanceSubLabel}>
+            Total attendance of the student
+          </Text>
+        </View>
+
+        {/* Academic Performance */}
+        <SectionTitleWithLines title="ACADMIC PERFORMANCE" />
+
+        {['Term I', 'Term II', 'Final'].map((term) => (
+          <View key={term} style={styles.cardPlain}>
+            <Text style={styles.termLabel}>{term}</Text>
+
+            <View style={styles.table}>
+              <View style={styles.tableHeader}>
+                <Text style={styles.cell}>Subject</Text>
+                {term === 'Final' ? (
+                  <Text style={styles.cell}>Final</Text>
+                ) : (
+                  <>
+                    <Text style={styles.cell}>Qtr 1</Text>
+                    <Text style={styles.cell}>Qtr 2</Text>
+                    <Text style={styles.cell}>{term}</Text>
+                  </>
+                )}
+              </View>
+
+              {[
+                'English',
+                'Hindi',
+                'Mathematics',
+                'Science',
+                'Social Science',
+                'Sanskrit',
+              ].map((subject, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.tableRow,
+                    i % 2 === 0 ? styles.rowLight : styles.rowDark,
+                  ]}
+                >
+                  <Text style={[styles.cell, styles.subjectCell]}>{subject}</Text>
+                  {term === 'Final' ? (
+                    <Text style={[styles.cell,styles.gradeCell]}>A+ / 96</Text>
+                  ) : (
+                    <>
+                      <Text style={[styles.cell]}>A+ / 96</Text>
+                      <Text style={[styles.cell]}>A+ / 96</Text>
+                      <Text style={[styles.cell,styles.gradeCell]}>A+ / 96</Text>
+                    </>
+                  )}
+                </View>
+              ))}
+            </View>
+
+            {/* GPA */}
+            <View style={styles.gpaRow}>
+              <Text style={styles.gpaLabel}>GPA</Text>
+              <Text style={styles.gpaValue}>4.21</Text>
+            </View>
+          </View>
+        ))}
+
+        {/*Remarks by Teacher */}
+        <View style={styles.remarksContainer}>
+          <Text style={styles.remarkHeading}>Remarks by Teacher</Text>
+
+          <View style={styles.remarksBox}>
+            <Text style={styles.remarkText}>
+              Yogita has shown tremendous growth throughout the academic year.
+              She has consistently performed well in all subjects and
+              demonstrates excellent discipline and participation in class
+              activities.
+            </Text>
+          </View>
+
+          <Text style={styles.remarkAuthor}>– Class Teacher</Text>
+        </View>
+      </ScrollView>
     </View>
   );
 };
 
-export default AcademicYear;
+export default ReportCard;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
   topHalf: {
-   flex:1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: 120,
     backgroundColor: '#473f97',
+    justifyContent: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 40,
+  },
+  headerText: { fontSize: 20, color: '#fff', fontWeight: '600' },
+  content: { paddingBottom: 100 },
+
+  // Section Titles with lines
+  sectionTitleWrapper: {
+    paddingHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  coloredLine: {
+    height: 2,
+    backgroundColor: '#473f97',
+    width: '100%',
+    marginVertical: 6,
+  },
+  fullLineTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#473f97',
+    textAlign: 'center',
+  },
+
+  // Profile
+  card: {
+    backgroundColor: '#f2f4ff',
+    margin: 15,
+    padding: 16,
+    borderRadius: 12,
+  },
+  profileBlock: { alignItems: 'center', marginBottom: 16 },
+  avatar: { width: 80, height: 80, borderRadius: 40, marginBottom: 10 },
+  name: { fontSize: 18, fontWeight: '600', color: '#222' },
+  class: { fontSize: 14, color: '#666' },
+
+  // Attendance
+  termTitle: {
+    marginTop: 10,
+    marginLeft: 20,
+    marginBottom: 6,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#473f97',
+  },
+  attendanceBox: {
+    backgroundColor: '#e9fff3',
+    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#b2f2dc',
+  },
+  attendanceText: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#2ecc71',
+    marginLeft: 110,
+  },
+  attendanceSubLabel: {
+    fontSize: 14,
+    color: '#2ecc71',
+    marginTop: 4,
+    textAlign: 'center',
+    fontWeight: '400',
+  },
+
+  // Academic performance
+  cardPlain: {
+    backgroundColor: '#fff',
+    marginHorizontal: 15,
+    marginBottom: 6,
+    padding: 12,
+  },
+  termLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+    color: '#333',
+  },
+  table: { borderRadius: 8, overflow: 'hidden' },
+  tableHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#d3d3d3',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  cell: { flex: 1, fontSize: 13, textAlign: 'center', color: '#333' },
+  rowLight: { backgroundColor: '#f9f9f9' },
+  rowDark: { backgroundColor: '#eaeaea' },
+
+  // GPA Row
+  gpaRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 8,
+    marginRight: 35,
+    gap: 60,
+  },
+  gpaLabel: { fontSize: 16, fontWeight: '900', color: '#ff69b4' },
+  gpaValue: { fontSize: 16, fontWeight: '800', color: '#ff69b4' },
+
+  // Remarks
+  remarksContainer: {
+    marginTop: 20,
+    marginBottom: 40,
+    paddingHorizontal: 20,
+  },
+  remarkHeading: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#473f97',
+    marginBottom: 10,
+    paddingLeft: 2,
+  },
+  remarksBox: {
+    backgroundColor: '#FFD580',
+    padding: 20,
+    borderRadius: 20,
+    minHeight: 120,
+    justifyContent: 'flex-start',
+  },
+  remarkText: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '400',
+    lineHeight: 20,
+    textAlign: 'left',
+  },
+  remarkAuthor: {
+    marginTop: 8,
+    fontSize: 15,
+    color:'#ff69b4',
+    textAlign: 'left',
+    paddingLeft: 4,
+    fontWeight:'500',
+  },
+  subjectCell: {
+  fontWeight: 'bold',
+  color: '#473f97',
+},
+gradeCell:{
+    fontWeight:'bold',
+},
+
+userRow:{
+    flexDirection:'row',
+    alignContent:'flex-start',
+    marginLeft:10,
+},
+ logo: {
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
+    marginTop: 10,
+    marginBottom: 20,
     
   },
-    header:{
-        flexDirection:'row',
-        justifyContent:'space-evenly',
-        alignItems:'center',
-        marginBottom:5,
-        marginRight:160,
-
-    },
-  headtext:{
-    fontSize:22,
-    fontWeight:'400',
-    color:'white'
+  nameclass:{
+    marginTop:10,
+    marginLeft:15,
   },
-  bottomHalf:{
-    flex: 6,
+  title: {
+    fontSize: 25,
+    color: 'black',
+    fontWeight: '400',
+    marginBottom:0,
+
+  },
+  class:{
+    fontSize:16,
+    color:'black',
+    
+  },
+   bottomHalf: {
+    flex: 1.2,
     backgroundColor: '#fff',
-    padding:20,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    paddingHorizontal:20,
+
     marginTop: -30,
   },
-  
- row: {
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 10,
+    height:50,
+  },
+  label: {
+    width: 160,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: '#3b3b3b',
+    fontWeight: '400',
+  },
+  schoolHeader: {
   flexDirection: 'row',
-  justifyContent: 'space-between',
   alignItems: 'center',
-  paddingVertical: 20,
-  borderBottomColor: '#e0e0e0',
-  borderBottomWidth: 1,
+  paddingHorizontal: 20,
+  marginTop: 20,
 },
-label: {
-  fontSize: 18,
+
+schoolLogo: {
+  width: 100,
+  height: 100,
+  resizeMode: 'contain',
+  marginRight: 15,
+},
+
+schoolDetails: {
+  flex: 1,
+},
+
+schoolName: {
+  fontSize: 20,
+  fontWeight: '600',
+  color: '#473f97',
+},
+
+schoolAddress: {
+  fontSize: 16,
   fontWeight: '500',
-  color: '#000',
+  color: '#555',
+  marginTop: 4,
+  
 },
 
 
-  
-  
 });

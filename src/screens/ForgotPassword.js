@@ -9,7 +9,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import { useNavigation } from '@react-navigation/native';
+
 const ForgotPassword = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
    
@@ -42,12 +46,12 @@ const ForgotPassword = () => {
 
              {/* Sign In Button */} 
     <View style={{ marginTop: 100 }}>
-        <TouchableOpacity style={styles.signInButton}>
+        <TouchableOpacity style={styles.signInButton} onPress={()=>navigation.navigate('EnterOtp')}>
           <Text style={styles.generateotp}>Generate OTP</Text>
         </TouchableOpacity>
 
         {/* Forgot Password */}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>navigation.goBack()}>
           <Text style={styles.cancel}>Cancel</Text>
         </TouchableOpacity>
     </View>

@@ -1,21 +1,14 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { icons } from '../../slides'
-//import { useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 
 
 
 
 const Menu = () => {
     
-    // const navigation =  useNavigation();
-
-    // const handlePress = (screen) => {
-    //     if(screen) {
-    //         navigation.navigate(screen);
-    //     }
-    // }
-
+    const navigation =  useNavigation();
 
   return (
    <View style={styles.container}>
@@ -28,7 +21,7 @@ const Menu = () => {
                 <Text style={styles.class}>Class 7 B</Text>
             </View>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>navigation.navigate('Home')}>
             <Image source={require('../assets/icons/close.png')} style={{width:35, height:35, marginRight:10 }}/>
         </TouchableOpacity>
     </View>
@@ -36,10 +29,12 @@ const Menu = () => {
     {/* Menu Grid  */}
 
     <FlatList
+        showsVerticalScrollIndicator={false}
         data={icons}
         renderItem={({item})=> (
         <View style={styles.itemContainer}>
-            <TouchableOpacity style={styles.iconCircle} >
+            <TouchableOpacity style={styles.iconCircle}
+                onPress={()=> navigation.navigate(item.screen)}>
                 <Image source={item.icon} style={styles.iconImage}/>
             </TouchableOpacity>
             <Text style={styles.iconLabel}>{item.label}</Text>
@@ -52,7 +47,7 @@ const Menu = () => {
     
     {/* Logout  */}
     
-    <TouchableOpacity>
+    <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
         <Text style={styles.logout}>Logout</Text>
     </TouchableOpacity>
    </View>

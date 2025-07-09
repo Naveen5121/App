@@ -9,11 +9,13 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-
+import { useNavigation } from '@react-navigation/native';
 
 
 
 const Profile = () => {
+
+    const navigation=useNavigation();
 
     const fields = [
     'Roll Number',
@@ -27,12 +29,18 @@ const Profile = () => {
 
   return (
     <View style={styles.container}>
+      
       {/* Top Section with Logo and Title */}
       <ImageBackground
         source={require('../assets/union.png')}
         style={styles.topHalf}
         resizeMode="cover"
       >
+        <View style={styles.back}>
+          <TouchableOpacity onPress={()=>navigation.goBack()}>
+            <Image source={require('../assets/icons/back.png')} style={{width:36, height:36, marginRight:20 }}/>
+          </TouchableOpacity>
+        </View>
         <Image
           source={require('../assets/icons/user.png')}
           style={styles.logo}
@@ -41,7 +49,7 @@ const Profile = () => {
         <Text style={styles.class}>Class VII B</Text>
       </ImageBackground>
 
-      {/* Bottom Section with Inputs */}
+      {/* Bottom Section  */}
       <View style={styles.bottomHalf}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {fields.map((label, index) => (
@@ -50,16 +58,18 @@ const Profile = () => {
               <TextInput
                 style={styles.input}
                 keyboardType="default"
-                placeholder=""
-                placeholderTextColor="#ccc"
+                placeholder={`Enter ${label}`}
+                placeholderTextColor="#473f97"
               />
             </View>
           ))}
 
         </ScrollView>
 
-        {/* Logout Button */}
-        <TouchableOpacity style={styles.submitbutton}>
+        
+        <TouchableOpacity style={styles.submitbutton}onPress={()=>{
+          console.log('Submitted..')
+        }}>
           <Text style={styles.submittext}>Submit</Text>
         </TouchableOpacity>
       </View>
@@ -140,5 +150,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '400',
   },
- 
+ back:{
+  position: 'absolute',
+  top: 50,
+  left: 20,
+  zIndex: 10,
+ },
 });

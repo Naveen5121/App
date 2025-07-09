@@ -9,9 +9,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useState, useRef } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 const EnterOtp = () => {
 
+  const navigation = useNavigation();
   const [otp, setOtp] = useState(['', '', '', '', '']);
   const inputs = useRef([]);
 
@@ -77,12 +79,20 @@ const EnterOtp = () => {
 
              {/* Sign In Button */} 
     <View style={{ marginTop: 100 }}>
-        <TouchableOpacity style={styles.signInButton}>
+        <TouchableOpacity style={styles.signInButton}
+         onPress={() => {
+          const enteredOtp = otp.join('');
+          if (enteredOtp === '12345') {
+            navigation.navigate('NewPassword');
+          } else {
+            alert('Invalid OTP. Please try again.');
+          }
+        }}>
           <Text style={styles.generateotp}> Verify </Text>
         </TouchableOpacity>
 
         {/* Forgot Password */}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=> navigation.navigate('Login')}>
           <Text style={styles.cancel}>Cancel</Text>
         </TouchableOpacity>
     </View>
