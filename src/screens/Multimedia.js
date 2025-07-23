@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,82 +12,46 @@ import {
   Linking,
   Keyboard,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-const DATA = [
-  {
-    id: '1',
-    type: 'PDF',
-    title: 'Social Science Syllabus',
-    subtitle: 'Syllabus for 2020 batch\n12 pages / 360 KB',
-  },
-  {
-    id: '2',
-    type: 'Video',
-    title: 'Chapter-wise MCQs & Answers',
-    subtitle: 'Live Stream Capture',
-    url: 'https://www.youtube.com/watch?v=abc123',
-    thumbnail: require('../assets/thumbnail.png'),
-  },
-  {
-    id: '3',
-    type: 'ZIP',
-    title: 'Improvement In Food Resources',
-    subtitle: 'Syllabus for 2020 batch\n15 MB',
-  },
-  {
-    id: '4',
-    type: 'PDF',
-    title: 'Exemplar Solutions Class 10',
-    subtitle: '12 pages / 360 KB',
-  },
-  {
-    id: '5',
-    type: 'ZIP',
-    title: 'Preparation Tips',
-    subtitle: '15 MB',
-  },
-  {
-    id: '6',
-    type: 'Others',
-    title: 'Audio Chapter Guide',
-    subtitle: 'MP3 format / 10 MB',
-  },
-  {
-    id: '7',
-    type: 'ZIP',
-    title: 'Preparation Tips',
-    subtitle: '15 MB',
-  },
-  {
-    id: '8',
-    type: 'Others',
-    title: 'Audio Chapter Guide',
-    subtitle: 'MP3 format / 10 MB',
-  },
-];
+import { useSelector, useDispatch } from 'react-redux';
+import { setMultimediaItems } from '../redux/slices/multimediaSlice';
+import { multimediaData } from '../data/data';
 
 const FILTERS = ['All', 'Video', 'Images', 'Documents', 'Links', 'PDF', 'ZIP', 'Others'];
 
 const Multimedia = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
 
-  const navigation=useNavigation();
   const [searchActive, setSearchActive] = useState(false);
   const [query, setQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
 
-  const filteredData = DATA.filter(item => {
-    const matchesQuery = item.title.toLowerCase().includes(query.toLowerCase());
-    const matchesFilter = activeFilter === 'All' || item.type === activeFilter;
-    return matchesQuery && matchesFilter;
-  });
+  const multimediaItems = useSelector(state => state.multimedia.items);
+
+  const filteredData = useMemo(() => {
+    return multimediaItems.filter(item => {
+      const matchesQuery = item.title.toLowerCase().includes(query.toLowerCase());
+      const matchesFilter = activeFilter === 'All' || item.type === activeFilter;
+      return matchesQuery && matchesFilter;
+    });
+  }, [query, activeFilter, multimediaItems]);
 
   const handleItemPress = (item) => {
     if (item.type === 'Video' && item.url) {
       Linking.openURL(item.url);
+    } else {
+      Alert.alert('Download', `Downloading ${item.title}...`);
     }
   };
+
+  useEffect(() => {
+    if (!multimediaItems || multimediaItems.length === 0) {
+      dispatch(setMultimediaItems(multimediaData));
+    }
+  }, [dispatch, multimediaItems]);
 
   const renderItem = ({ item }) => {
     if (item.type === 'Video') {
@@ -95,12 +59,12 @@ const Multimedia = () => {
         <TouchableOpacity onPress={() => handleItemPress(item)} style={styles.card}>
           <View style={styles.videoThumbnailContainer}>
             <Image
-              source={item.thumbnail}
+              source={item.thumbnail || require('../assets/thumbnail.png')}
               style={styles.videoThumbnail}
               resizeMode="cover"
             />
             <Image
-              source={require('../assets/youtube.png')} 
+              source={require('../assets/youtube.png')}
               style={styles.playIcon}
             />
             <View style={styles.badgeContainerOverlay}>
@@ -129,82 +93,78 @@ const Multimedia = () => {
   };
 
   return (
-     <TouchableWithoutFeedback
+    <TouchableWithoutFeedback
       onPress={() => {
-      Keyboard.dismiss();
-      setSearchActive(false); 
-    }}>
-    
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={{ backgroundColor: '#473f97' }}>
-        <ImageBackground
-          source={require('../assets/union.png')}
-          style={styles.headerBackground}
-          resizeMode="cover"
-        >
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <TouchableOpacity onPress={()=>navigation.goBack()}>
-                <Image source={require('../assets/icons/back.png')} style={styles.backIcon} />
+        Keyboard.dismiss();
+        setSearchActive(false);
+      }}
+    >
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={{ backgroundColor: '#473f97' }}>
+          <ImageBackground
+            source={require('../assets/union.png')}
+            style={styles.headerBackground}
+            resizeMode="cover"
+          >
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <Image source={require('../assets/icons/back.png')} style={styles.backIcon} />
+                </TouchableOpacity>
+                {searchActive ? (
+                  <TextInput
+                    placeholder="Search..."
+                    value={query}
+                    onChangeText={setQuery}
+                    style={styles.searchInput}
+                    autoFocus
+                  />
+                ) : (
+                  <Text style={styles.headerText}>Multimedia</Text>
+                )}
+              </View>
+              <TouchableOpacity onPress={() => {
+                setSearchActive(!searchActive);
+                setQuery('');
+                Keyboard.dismiss();
+              }}>
+                <Image source={require('../assets/icons/search.png')} style={styles.searchIcon} />
               </TouchableOpacity>
-              {searchActive ? (
-                <TextInput
-                  placeholder="Search..."
-                  value={query}
-                  onChangeText={setQuery}
-                  style={[styles.searchInput]}
-                  autoFocus
-                />
-              ) : (
-                <Text style={styles.headerText}>Multimedia</Text>
-              )}
             </View>
+          </ImageBackground>
+        </View>
 
-            <TouchableOpacity onPress={() => {
-              setSearchActive(!searchActive);
-              setQuery('');
-              Keyboard.dismiss();
-            }}>
-              <Image source={require('../assets/icons/search.png')} style={styles.searchIcon} />
+        {/* Filters */}
+        <ScrollView
+          style={{ marginBottom: 10 }}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterScrollContainer}
+        >
+          {FILTERS.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => setActiveFilter(item)}>
+              <Text
+                style={[
+                  styles.filterItem,
+                  activeFilter === item && styles.activeFilter,
+                ]}
+              >
+                {item}
+              </Text>
             </TouchableOpacity>
-          </View>
-        </ImageBackground>
+          ))}
+        </ScrollView>
+
+        {/* Content */}
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={filteredData}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 40 }}
+        />
       </View>
-
-      {/* Filter Scroll Bar */}
-      <ScrollView
-        style={{ marginBottom: 10 }}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterScrollContainer}
-      >
-        {FILTERS.map((item, index) => (
-          <TouchableOpacity key={index} onPress={() => setActiveFilter(item)}>
-            <Text
-              style={[
-                styles.filterItem,
-                activeFilter === item && styles.activeFilter,
-              ]}
-            >
-              {item}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      {/* Content List */}
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={filteredData}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={{
-          paddingHorizontal: 10,
-          paddingBottom: 40,
-        }}
-      />
-    </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -339,9 +299,5 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     resizeMode: 'contain',
-  },
-  durationText: {
-    color: '#fff',
-    fontSize: 11,
   },
 });

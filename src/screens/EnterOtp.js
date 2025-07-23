@@ -7,13 +7,22 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { useState, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector,useDispatch } from 'react-redux';
+import { generateOtp } from '../redux/slices/userSlice';
+
 
 const EnterOtp = () => {
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  
+  const storedOtp = useSelector((state) => state.user.otp);
+  const phone = useSelector((state) => state.user.phone);
+
   const [otp, setOtp] = useState(['', '', '', '', '']);
   const inputs = useRef([]);
 
@@ -28,10 +37,32 @@ const EnterOtp = () => {
     }
   };
 
-  const handleKeyPress = (key, index) => {
-    if (key === 'Backspace' && !otp[index] && index > 0) {
-      inputs.current[index - 1].focus();
+  const handleKeyPress = ({ nativeEvent }) => {
+  if (nativeEvent.key === 'Backspace') {
+    const lastFilledIndex = otp.findLastIndex((digit) => digit !== '');
+    if (lastFilledIndex >= 0) {
+      const newOtp = [...otp];
+      newOtp[lastFilledIndex] = '';
+      setOtp(newOtp);
+      inputs.current[lastFilledIndex]?.focus();
     }
+  }
+};
+
+
+  const handleVerifyOtp = () => {
+    const enteredOtp = otp.join('');
+    if(enteredOtp == storedOtp) {
+      Alert.alert('OTP VERIFIED','Success');
+      navigation.navigate('NewPassword');
+    }else{
+      Alert.alert('Invalid OTP', 'Please try again');
+    }
+  };
+
+  const handleResendOtp = () => {
+    dispatch(generateOtp());
+    Alert.alert('New OTP Generated', 'Check your SMS');
   };
 
 
@@ -51,27 +82,32 @@ const EnterOtp = () => {
       </ImageBackground>
 
       <View style={styles.bottomHalf}>
-
         {/* Phone Number Field */}
+        <Text style={{textAlign: 'center', marginBottom: 10,marginRight:20,textAlign:'center'}}>
+                  (Dev OTP: {storedOtp})
+                </Text>
         <Text style={styles.label}>Enter OTP</Text>
          <View style={styles.otpWrapper}>
             <View style={styles.otpContainer}>
               {otp.map((digit, index) => (
-                <TextInput
+               <TextInput
                   key={index}
                   ref={(ref) => (inputs.current[index] = ref)}
                   style={styles.otpBox}
-                  keyboardType="numeric"
+                  keyboardType="number-pad"
                   maxLength={1}
                   value={digit}
                   onChangeText={(text) => handleChange(text, index)}
-                  onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
+                  onKeyPress={handleKeyPress}
+                  
                 />
+
               ))}
+              
             </View>
 
             {/* Send Again just below OTP input */}
-            <TouchableOpacity style={styles.sendagainbutton}>
+            <TouchableOpacity style={styles.sendagainbutton} onPress={handleResendOtp}>
               <Text style={styles.sendagain}>Send Again</Text>
             </TouchableOpacity>
           </View>
@@ -80,14 +116,8 @@ const EnterOtp = () => {
              {/* Sign In Button */} 
     <View style={{ marginTop: 100 }}>
         <TouchableOpacity style={styles.signInButton}
-         onPress={() => {
-          const enteredOtp = otp.join('');
-          if (enteredOtp === '12345') {
-            navigation.navigate('NewPassword');
-          } else {
-            alert('Invalid OTP. Please try again.');
-          }
-        }}>
+         onPress={handleVerifyOtp}
+        >
           <Text style={styles.generateotp}> Verify </Text>
         </TouchableOpacity>
 

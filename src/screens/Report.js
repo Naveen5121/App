@@ -44,7 +44,7 @@ const Report = () => {
             <View style={styles.row}>
                 <Text style={styles.label}>{item}</Text>
                 <TouchableOpacity
-                  onPress={()=>navigation.navigate('ReportCard')}>
+                  onPress={()=>navigation.navigate('ReportCard',{selectedClass : item})}>
                     <Image source={require('../assets/next.png')} style={{width:24,height:24,}}/>
                 </TouchableOpacity>
                 

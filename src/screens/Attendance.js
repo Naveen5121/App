@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,23 +10,10 @@ import {
 } from 'react-native';
 import dayjs from 'dayjs';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import { setAcademicYear } from '../redux/slices/academicYearSlice';
 
-const attendanceData = {
-  '2025-01': { present: 23, absent: 3, leave: 0 },
-  '2025-02': { present: 21, absent: 2, leave: 2 },
-  '2025-03': { present: 24, absent: 1, leave: 0 },
-  '2025-04': { present: 22, absent: 3, leave: 1 },
-  '2025-05': { present: 26, absent: 0, leave: 0 },
-  '2025-06': { present: 25, absent: 1, leave: 1 },
-  '2025-07': { present: 20, absent: 4, leave: 3 },
-  '2025-08': { present: 23, absent: 2, leave: 2 },
-  '2025-09': { present: 22, absent: 3, leave: 1 },
-  '2025-10': { present: 23, absent: 2, leave: 1 },
-  '2025-11': { present: 24, absent: 0, leave: 2 },
-  '2025-12': { present: 25, absent: 0, leave: 1 },
-};
-
-const generateMonthData = (year) => {
+const generateMonthData = (year, attendanceData) => {
   return Array.from({ length: 12 }, (_, index) => {
     const month = dayjs(`${year}-${index + 1}-01`).format('MMM').toUpperCase();
     const key = `${year}-${String(index + 1).padStart(2, '0')}`;
@@ -40,16 +27,31 @@ const generateMonthData = (year) => {
 
 const Attendance = () => {
   const navigation = useNavigation();
-  const [selectedYear, setSelectedYear] = useState(dayjs().year());
-  const [monthlyData, setMonthlyData] = useState(generateMonthData(selectedYear));
+  const dispatch = useDispatch();
+  
+  // ✅ Get the logged-in user's phone number
+  const phone = useSelector((state) => state.auth.phone);
+
+  const selectedYear = useSelector((state) => state.academicYear.selectedYear) || dayjs().year();
 
   useEffect(() => {
-    setMonthlyData(generateMonthData(selectedYear));
-  }, [selectedYear]);
+    if (!selectedYear) {
+      dispatch(setAcademicYear(dayjs().year()));
+    }
+  }, []);
+
+  // ✅ Use phone number to fetch attendance
+  const attendanceData = useSelector(
+    (state) => state.attendance.attendanceByStudentId[phone] || {}
+  );
+
+  const monthlyData = useMemo(() => {
+    return generateMonthData(selectedYear, attendanceData);
+  }, [selectedYear, attendanceData]);
 
   const handleYearChange = (direction) => {
     const newYear = direction === 'up' ? selectedYear + 1 : selectedYear - 1;
-    setSelectedYear(newYear);
+    dispatch(setAcademicYear(newYear));
   };
 
   return (
@@ -149,6 +151,7 @@ const Attendance = () => {
 
 export default Attendance;
 
+// ✅ Styles remain unchanged
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -203,7 +206,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
     paddingHorizontal: 10,
-    
   },
   monthCircle: {
     backgroundColor: '#ff5c8d',

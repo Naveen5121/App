@@ -1,3 +1,4 @@
+// src/screens/Examination.js
 import React from 'react';
 import {
   View,
@@ -7,68 +8,19 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-const examData = [
-  {
-    id: '1',
-    title: 'Science Basic Assessment Test',
-    duration: '30 Min',
-    status: 'pending',
-  },
-  {
-    id: '2',
-    title: 'General Knowledge Level IV',
-    duration: '30 Min',
-    status: 'completed',
-    score: '40/200',
-  },
-  {
-    id: '3',
-    title: 'Math Super 20 Exam',
-    duration: '30 Min',
-    status: 'pending',
-  },
-  {
-    id: '4',
-    title: 'General Knowledge Level III',
-    duration: '30 Min',
-    status: 'completed',
-    score: '40/200',
-  },
-  {
-    id: '5',
-    title: 'English Basic Assessment Test',
-    duration: '30 Min',
-    status: 'pending',
-  },
-  {
-    id: '6',
-    title: 'General Knowledge Level II',
-    duration: '30 Min',
-    status: 'pending',
-  },
-   {
-    id: '7',
-    title: 'Maths Super 50',
-    duration: '50 Min',
-    status: 'pending',
-  },
-   {
-    id: '8',
-    title: 'General Knowledge Level IV',
-    duration: '30 Min',
-    status: 'pending',
-  },
-];
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentExamId } from '../redux/slices/examSlice';
 
 const Examination = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const exams = useSelector(state => state.exam.exams);
 
   return (
     <View style={styles.container}>
-      {/* Top Purple Header */}
       <View style={{ backgroundColor: '#473f97' }}>
         <ImageBackground
           source={require('../assets/union.png')}
@@ -76,7 +28,7 @@ const Examination = () => {
           resizeMode="cover"
         >
           <View style={styles.header}>
-            <TouchableOpacity onPress={()=>navigation.goBack()}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
               <Image
                 source={require('../assets/icons/back.png')}
                 style={styles.backIcon}
@@ -87,30 +39,24 @@ const Examination = () => {
         </ImageBackground>
       </View>
 
-      {/* Bottom Section */}
       <View style={styles.listContainer}>
         <Text style={styles.sectionTitle}>Examination List</Text>
 
         <FlatList
-          data={examData}
+          data={exams}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingBottom: 20 }}
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.cardLeft}>
                 <Text style={styles.examTitle}>{item.title}</Text>
-
                 <View style={styles.durationRow}>
                   <Image
                     source={require('../assets/icons/timer.png')}
                     style={styles.clockIcon}
                   />
-                  <Text style={styles.durationText}>
-                    Duration: {item.duration}
-                  </Text>
+                  <Text style={styles.durationText}>Duration: {item.duration}</Text>
                 </View>
 
-                {/* Status & Score */}
                 {item.status === 'completed' ? (
                   <View style={styles.completedRow}>
                     <Text style={styles.scoreText}>Score: {item.score}</Text>
@@ -119,7 +65,13 @@ const Examination = () => {
                     </View>
                   </View>
                 ) : (
-                  <TouchableOpacity style={styles.statusBoxStart} onPress={()=>navigation.navigate('Exam')}>
+                  <TouchableOpacity
+                    style={styles.statusBoxStart}
+                    onPress={() => {
+                      dispatch(setCurrentExamId(item.id));
+                      navigation.navigate('Exam');
+                    }}
+                  >
                     <Image
                       source={require('../assets/icons/play.png')}
                       style={styles.playIcon}
@@ -129,10 +81,9 @@ const Examination = () => {
                 )}
               </View>
 
-              {/* Right Arrow Button */}
               <TouchableOpacity style={styles.arrowContainer}>
                 <Image
-                  source={require('../assets/right-arrow.png')} 
+                  source={require('../assets/right-arrow.png')}
                   style={styles.arrowIcon}
                 />
               </TouchableOpacity>
@@ -145,6 +96,7 @@ const Examination = () => {
 };
 
 export default Examination;
+
 
 const styles = StyleSheet.create({
   container: {

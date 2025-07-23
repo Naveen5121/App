@@ -10,28 +10,58 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { login } from '../redux/slices/userSlice';
+import { setUser } from '../redux/slices/authSlice';
+import {reportCardData, users} from '../data/data';
+import {setReportCardData} from '../redux/slices/reportCardSlice';
 
 const Login = () => {
-  const navigation = useNavigation();
 
-  const [phone, setPhone] = useState('');
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+ 
+
+  const [phone, setPhoneInput] = useState('');
   const [password, setPassword] = useState('');
 
-  const VALID_PHONE = '9812345678';
-  const VALID_PASSWORD = '123456';
-
+  
   const handleLogin = () => {
-    if (phone === VALID_PHONE && password === VALID_PASSWORD) {
-      navigation.navigate('Home');
-    } else {
-      Alert.alert(
-        'Login Failed',
-        'Invalid phone number or password',
-        [{ text: 'Cancel', style: 'cancel' }],
-        { cancelable: true }
-      );
+
+    
+    if (phone.length !== 10 || password.length < 1) {
+      Alert.alert('Error', 'Please enter valid phone number and password');
+      return;
     }
-  };
+
+    const user = users.find((u)=>u.phone===phone && u.password === password);
+
+  
+    if (user) {
+      dispatch(login({ phone, password }));
+      dispatch(setUser(user));
+
+      const userReportData = reportCardData[phone];
+      if(userReportData) {
+        dispatch(setReportCardData({
+          phone,
+          attendance : userReportData.attendance,
+          results : userReportData.results,
+          remarks : userReportData.remarks,
+        }));
+      }
+      navigation.navigate('Home');
+      } else {
+          Alert.alert(
+            'Login Failed',
+            'Invalid phone number or password',
+            [{ text: 'Cancel', style: 'cancel' }],
+            { cancelable: true }
+          );
+      };
+    };
+
+
 
 
   return (
@@ -46,7 +76,7 @@ const Login = () => {
         <Text style={styles.title}>Sign In</Text>
       </ImageBackground>
 
-      {/* Bottom Section with Inputs */}
+      {/* Bottom Section */}
       <View style={styles.bottomHalf}>
         {/* Phone Number Field */}
         <Text style={styles.label}>Phone Number</Text>
@@ -58,7 +88,8 @@ const Login = () => {
             keyboardType="number-pad"
             placeholderTextColor="#D1D1D1"
             value={phone}
-            onChangeText={setPhone}
+            maxLength={10}
+            onChangeText={(text)=>setPhoneInput(text)}
           />
         </View>
 
@@ -70,7 +101,7 @@ const Login = () => {
           placeholderTextColor="#D1D1D1"
           secureTextEntry
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text)=>setPassword(text)}
         />
 
         {/* Sign In Button */}

@@ -10,43 +10,41 @@ import {
 } from 'react-native';
 import dayjs from 'dayjs';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector,useDispatch } from 'react-redux';
+import { toggleHomework } from '../redux/slices/homeSlice';
+
+const groupHomeworkByDate = (homeworkList) => {
+  const grouped = {};
+  homeworkList.forEach((item) => {
+    const itemDate = dayjs(item.date);
+    const today = dayjs();
+    const yesterday = today.subtract(1, 'day');
+
+    let label = itemDate.format('D MMM');
+
+    if (itemDate.isSame(today, 'day')) label = 'Today';
+    else if (itemDate.isSame(yesterday, 'day')) label = 'Yesterday';
+
+    if (!grouped[label]) grouped[label] = [];
+    grouped[label].push(item);
+  });
+
+  return grouped;
+};
 
 const Homework = () => {
 
   const navigation =useNavigation();
-  const [homeworkList, setHomeworkList] = useState([
-    {
-      id: 1,
-      title: 'Do Math Assignment',
-      subject: 'Mathematics',
-      date: dayjs().format('YYYY-MM-DD'), // Today
-      completed: false,
-    },
-    {
-      id: 2,
-      title: 'Read History Chapter',
-      subject: 'History',
-      date: dayjs().subtract(1, 'day').format('YYYY-MM-DD'), // Yesterday
-      completed: true,
-    },
-    {
-      id: 3,
-      title: 'Science Project Research',
-      subject: 'Science',
-      date: dayjs().subtract(2, 'day').format('YYYY-MM-DD'), // Earlier
-      completed: false,
-    },
-  ]);
+  const dispatch = useDispatch();
 
-  const toggleHomework = (id) => {
-    setHomeworkList(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, completed: !item.completed } : item
-      )
-    );
+  const homeworkList = useSelector((state)=>state.home.homeworks);
+  const grouped = groupHomeworkByDate(homeworkList);
+
+  const handleToggle = (id) => {
+    dispatch(toggleHomework(id));
   };
 
-  const grouped = groupHomeworkByDate(homeworkList);
+
 
   return (
     <View style={styles.container}>
@@ -82,7 +80,7 @@ const Homework = () => {
                   <TouchableOpacity
                     key={item.id}
                     style={[styles.card, item.completed && styles.completedCard]}
-                    onPress={() => toggleHomework(item.id)}
+                    onPress={() => handleToggle(item.id)}
                   >
                     <View style={styles.row}>
                       <View
@@ -111,24 +109,6 @@ const Homework = () => {
   );
 };
 
-const groupHomeworkByDate = (homeworkList) => {
-  const grouped = {};
-  homeworkList.forEach((item) => {
-    const itemDate = dayjs(item.date);
-    const today = dayjs();
-    const yesterday = today.subtract(1, 'day');
-
-    let label = itemDate.format('D MMM');
-
-    if (itemDate.isSame(today, 'day')) label = 'Today';
-    else if (itemDate.isSame(yesterday, 'day')) label = 'Yesterday';
-
-    if (!grouped[label]) grouped[label] = [];
-    grouped[label].push(item);
-  });
-
-  return grouped;
-};
 
 export default Homework;
 

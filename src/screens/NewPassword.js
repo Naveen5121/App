@@ -10,12 +10,17 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { setPassword } from '../redux/slices/userSlice';
 
 const NewPassword = () => {
   const navigation = useNavigation();
-
+  const dispatch = useDispatch();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword,setShowPassword] = useState(false);
+  const [showConfirmPassword,setShowConfirmPassword] = useState(false);
+  
 
   const handleSubmit = () => {
     if (newPassword !== confirmPassword) {
@@ -26,7 +31,8 @@ const NewPassword = () => {
         { cancelable: true }
       );
     } else {
-      navigation.navigate('Home');
+      dispatch(setPassword(newPassword));
+      navigation.navigate('Login');
     }
   };
 
@@ -53,26 +59,40 @@ const NewPassword = () => {
       <View style={styles.bottomHalf}>
         <View style={{ marginTop: 12 }}>
           <Text style={styles.label}>Create New Password</Text>
-          <TextInput
-            style={styles.inputRow}
-            placeholder="************"
-            placeholderTextColor="#D1D1D1"
-            secureTextEntry
-            value={newPassword}
-            onChangeText={setNewPassword}
-          />
+          <View style={styles.inputWrap}>
+            <TextInput
+              style={styles.inputRow}
+              placeholder="************"
+              placeholderTextColor="#D1D1D1"
+              secureTextEntry={!showPassword}
+              value={newPassword}
+              onChangeText={setNewPassword}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+              <Image 
+                source={
+                  showConfirmPassword ? require('../assets/icons/hide.png') : require('../assets/icons/view.png')} style={styles.eyeIcon}/>
+            </TouchableOpacity>
+          </View>  
         </View>
 
         <View style={{ marginTop: 12 }}>
           <Text style={styles.label}>Confirm New Password</Text>
-          <TextInput
-            style={styles.inputRow}
-            placeholder="************"
-            placeholderTextColor="#D1D1D1"
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
+          <View style={styles.inputWrap}>
+            <TextInput
+              style={styles.inputRow}
+              placeholder="************"
+              placeholderTextColor="#D1D1D1"
+              secureTextEntry={!showConfirmPassword}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeButton}>
+              <Image 
+                source={
+                  showConfirmPassword ? require('../assets/icons/hide.png') : require('../assets/icons/view.png')} style={styles.eyeIcon}/>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Submit Button */}
@@ -156,4 +176,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 25,
   },
+ inputWrapper: {
+  position: 'relative',
+  marginTop: 6,
+},
+input: {
+  fontSize: 20,
+  color: '#000',
+  borderBottomWidth: 1,
+  borderColor: '#ccc',
+  paddingRight: 40, 
+  paddingVertical: 10,
+},
+eyeButton: {
+  position: 'absolute',
+  right: 0,
+  top: 10,
+  padding: 5,
+},
+eyeIcon: {
+  width: 24,
+  height: 24,
+  tintColor: '#999',
+},
+
 });

@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View,FlatList, Image,ImageBackground,TouchableOpacity,} from 'react-native'
 import React from 'react'
-import { notices } from '../../slides'
+import { useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 
 const NoticeBoard = () => {
 
   const navigation=useNavigation();
+  const notices = useSelector((state)=>state.home.notices);
 
   return (
      <View style={styles.container}>

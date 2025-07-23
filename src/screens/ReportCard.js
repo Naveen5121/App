@@ -8,8 +8,10 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from 'react-native';
-
+import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+
 
 const SectionTitleWithLines = ({ title }) => (
   <View style={styles.sectionTitleWrapper}>
@@ -21,17 +23,27 @@ const SectionTitleWithLines = ({ title }) => (
 
 const ReportCard = () => {
 
-    const fields = [
-    'Roll Number',
-    'Date of Birth',
-    'Blood Group',
-    'Emergency Contact',
-    'Position in Class',
-    "Father's Name",
-    "Mother's Name",
+  const profileFields = [
+    { label: 'Roll Number', key: 'rollNumber' },
+    { label: 'Date of Birth', key: 'dob' },
+    { label: 'Blood Group', key: 'bloodGroup' },
+    { label: 'Emergency Contact', key: 'emergencyContact' },
+    { label: 'Position in Class', key: 'position' },
+    { label: "Father's Name", key: 'fatherName' },
+    { label: "Mother's Name", key: 'motherName' },
   ];
 
+
+  const route = useRoute();
+  const selectedClass = route.params?.selectedClass || 'Class Info';
   const navigation=useNavigation();
+  const name = useSelector((state)=>state.auth.name);
+  const classSection = useSelector((state)=>state.auth.classSection);
+  const phone = useSelector((state) => state.auth.phone);
+  const profile = useSelector((state) => state.auth.profileMap?.[phone]) || {};
+  const attendance = useSelector((state)=> state.reportCard.attendance?.[phone]) || {};
+  const results = useSelector((state)=> state.reportCard.results?.[phone]) || {};
+  const remarks = useSelector((state)=>state.reportCard.remarks?.[phone]) || {};
 
   return (
     <View style={styles.container}>
@@ -48,7 +60,7 @@ const ReportCard = () => {
               style={{ width: 30, height: 30, marginRight: 10 }}
             />
           </TouchableOpacity>
-          <Text style={styles.headerText}>Class 12th (2020–21)</Text>
+          <Text style={styles.headerText}>{selectedClass}</Text>
         </View>
       </ImageBackground>
 
@@ -79,22 +91,23 @@ const ReportCard = () => {
                   style={styles.logo}
                 />
               <View style={styles.nameclass}>
-                <Text style={styles.title}>Yogitha</Text>
-                <Text style={styles.class}>Class VII B</Text>
+                <Text style={styles.title}>{name}</Text>
+                <Text style={styles.class}>{classSection}</Text>
               </View>
             </View>
-                 {fields.map((label, index) => (
-                   <View style={styles.inputRow} key={index}>
-                     <Text style={styles.label}>{label}</Text>
-                   </View>
-                 ))}
+                {profileFields.map(({ label, key }) => (
+                  <View style={styles.inputRow} key={key}>
+                    <Text style={styles.label}>{label}</Text>
+                    <Text style={styles.input}>{profile[key] || '-'}</Text>
+                  </View>
+                ))}
         </View>
         {/* Attendance Section */}
         <SectionTitleWithLines title="ATTENDANCE" />
 
         <Text style={styles.termTitle}>Term I</Text>
         <View style={styles.attendanceBox}>
-          <Text style={styles.attendanceText}>235 / 249 Days</Text>
+          <Text style={styles.attendanceText}>{attendance.term1 || '-'}</Text>
           <Text style={styles.attendanceSubLabel}>
             Total attendance of the student
           </Text>
@@ -102,7 +115,7 @@ const ReportCard = () => {
 
         <Text style={styles.termTitle}>Term II</Text>
         <View style={styles.attendanceBox}>
-          <Text style={styles.attendanceText}>235 / 249 Days</Text>
+          <Text style={styles.attendanceText}>{attendance.term2 || '-'}</Text>
           <Text style={styles.attendanceSubLabel}>
             Total attendance of the student
           </Text>
@@ -129,39 +142,26 @@ const ReportCard = () => {
                 )}
               </View>
 
-              {[
-                'English',
-                'Hindi',
-                'Mathematics',
-                'Science',
-                'Social Science',
-                'Sanskrit',
-              ].map((subject, i) => (
-                <View
-                  key={i}
-                  style={[
-                    styles.tableRow,
-                    i % 2 === 0 ? styles.rowLight : styles.rowDark,
-                  ]}
-                >
-                  <Text style={[styles.cell, styles.subjectCell]}>{subject}</Text>
-                  {term === 'Final' ? (
-                    <Text style={[styles.cell,styles.gradeCell]}>A+ / 96</Text>
-                  ) : (
-                    <>
-                      <Text style={[styles.cell]}>A+ / 96</Text>
-                      <Text style={[styles.cell]}>A+ / 96</Text>
-                      <Text style={[styles.cell,styles.gradeCell]}>A+ / 96</Text>
-                    </>
-                  )}
-                </View>
-              ))}
+              {['English','Hindi','Mathematics','Science','Social Science','Sanskrit'].map((subject, i) => (
+                  <View key={i} style={[styles.tableRow, i % 2 === 0 ? styles.rowLight : styles.rowDark]}>
+                    <Text style={[styles.cell, styles.subjectCell]}>{subject}</Text>
+                    {term === 'Final' ? (
+                      <Text style={[styles.cell, styles.gradeCell]}>{results.final?.[subject] || '-'}</Text>
+                    ) : (
+                      <>
+                        <Text style={[styles.cell]}>{results[term.toLowerCase()]?.[subject] || '-'}</Text>
+                        <Text style={[styles.cell]}>{results[term.toLowerCase()]?.[subject] || '-'}</Text>
+                        <Text style={[styles.cell, styles.gradeCell]}>{results[term.toLowerCase()]?.[subject] || '-'}</Text>
+                      </>
+                    )}
+                  </View>
+                ))}
             </View>
 
             {/* GPA */}
             <View style={styles.gpaRow}>
               <Text style={styles.gpaLabel}>GPA</Text>
-              <Text style={styles.gpaValue}>4.21</Text>
+              <Text style={styles.gpaValue}>{results[term.toLowerCase()]?.GPA || '-'}</Text>
             </View>
           </View>
         ))}
@@ -171,15 +171,10 @@ const ReportCard = () => {
           <Text style={styles.remarkHeading}>Remarks by Teacher</Text>
 
           <View style={styles.remarksBox}>
-            <Text style={styles.remarkText}>
-              Yogita has shown tremendous growth throughout the academic year.
-              She has consistently performed well in all subjects and
-              demonstrates excellent discipline and participation in class
-              activities.
-            </Text>
+            <Text style={styles.remarkText}>{remarks.text || 'No remarks provided.'}</Text>
           </View>
 
-          <Text style={styles.remarkAuthor}>– Class Teacher</Text>
+          <Text style={styles.remarkAuthor}>–{remarks.teacher || 'Class Teacher'}</Text>
         </View>
       </ScrollView>
     </View>
@@ -392,6 +387,7 @@ userRow:{
   },
   inputRow: {
     flexDirection: 'row',
+    justifyContent:'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: '#ccc',
@@ -444,3 +440,5 @@ schoolAddress: {
 
 
 });
+
+

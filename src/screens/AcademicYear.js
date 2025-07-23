@@ -8,21 +8,28 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import { useState } from 'react';
+
 import { RadioButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-
-
+import { useDispatch, useSelector } from 'react-redux';
+import { setAcademicYear } from '../redux/slices/academicYearSlice';
 
 const AcademicYear = () => {
 
+    const dispatch = useDispatch();
+    const selectedYear = useSelector(state=>state.academicYear.selectedYear);
     const navigation = useNavigation();
-    const [selectedYear,setSelectedYear]=useState('');
+    
     const years = ['2022-23','2023-24','2024-25','2025-26'];
+
     const handleSubmit = () => {
+      if(selectedYear){
         navigation.goBack();
         console.log('Selected Year:',selectedYear);
+    }else{
+      console.log('No year selected')
     }
+  };
 
   return (
     <View style={styles.container}>
@@ -51,7 +58,7 @@ const AcademicYear = () => {
                 <RadioButton
                   value={item}
                   status={selectedYear === item ? 'checked':'unchecked'}
-                  onPress={()=>setSelectedYear(item)}
+                  onPress={()=>dispatch(setAcademicYear(item))}
                   color='#4b3baa'
                 />
                 <Text style={styles.radioLabel}>{item}</Text>

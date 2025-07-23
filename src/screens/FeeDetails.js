@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,9 @@ import {
   ImageBackground,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadFees } from '../redux/slices/feeSlice';
+
 
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental &&
@@ -20,76 +23,40 @@ if (Platform.OS === 'android') {
 
 const tabs = ['School Fee', 'Exam Fee', 'Activity Fee', 'Other Fee'];
 
-const feeData = [
-  {
-    id: '1',
-    month: 'January',
-    date: '06 May',
-    paid: true,
-    amount: '₹ 16,600',
-    details: {
-      totalFee: '₹ 14,500',
-      extraFee: '₹ 2,000',
-      lateCharges: '₹ 600',
-      discount: '- ₹ 500',
-      paidFee: '₹ 16,600',
-    },
-  },
-  {
-    id: '2',
-    month: 'December',
-    date: '06 May',
-    paid: true,
-    amount: '₹ 14,500',
-    details: {
-      totalFee: '₹ 13,000',
-      extraFee: '₹ 1,000',
-      lateCharges: '₹ 300',
-      discount: '- ₹ 200',
-      paidFee: '₹ 14,500',
-    },
-  },
-  {
-    id: '3',
-    month: 'November',
-    date: '06 May',
-    paid: true,
-    amount: '₹ 16,500',
-    details: {
-      totalFee: '₹ 15,000',
-      extraFee: '₹ 1,000',
-      lateCharges: '₹ 1,000',
-      discount: '- ₹ 500',
-      paidFee: '₹ 16,500',
-    },
-  },
-  {
-    id: '4',
-    month: 'October',
-    date: '06 May',
-    paid: true,
-    amount: '₹ 14,500',
-    details: {
-      totalFee: '₹ 13,000',
-      extraFee: '₹ 1,000',
-      lateCharges: '₹ 500',
-      discount: '₹ 0',
-      paidFee: '₹ 14,500',
-    },
-  },
-];
-
 const FeeDetails = () => {
   const navigation=useNavigation();
   const [selectedTab, setSelectedTab] = useState('School Fee');
   const [expandedId, setExpandedId] = useState(null);
+  const dispatch=useDispatch();
+
+  const { schoolFees, examFees, activityFees, otherFees } = useSelector((state) => state.fee);
+ 
+
+  useEffect(() => {
+      dispatch(loadFees());
+  },);
+
+  const getCurrentFeeData = () => {
+    switch (selectedTab) {
+      case 'School Fee':
+        return schoolFees;
+      case 'Exam Fee':
+        return examFees;
+      case 'Activity Fee':
+        return activityFees;
+      case 'Other Fee':
+        return otherFees;
+      default:
+        return [];
+    }
+  };
 
   const toggleExpand = (id) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedId((prev) => (prev === id ? null : id));
   };
 
-  const renderFeeItem = ({ item }) => {
+  const renderItem = ({ item }) => {
     const isExpanded = expandedId === item.id;
 
     return (
@@ -97,7 +64,7 @@ const FeeDetails = () => {
         <TouchableOpacity onPress={() => toggleExpand(item.id)}>
           <View style={styles.cardHeader}>
             <View>
-              <Text style={styles.feeTitle}>School Fee for {item.month}</Text>
+              <Text style={styles.feeTitle}>{selectedTab} for {item.month}</Text>
               <View style={styles.amountRow}>
                 <Text style={styles.amount}>{item.amount}</Text>
                 <View style={styles.paidBadge}>
@@ -191,10 +158,15 @@ const FeeDetails = () => {
 
         {/* Fee List */}
         <FlatList
-          data={feeData}
-          keyExtractor={(item) => item.id}
-          renderItem={renderFeeItem}
+          data={getCurrentFeeData()}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
           contentContainerStyle={styles.list}
+          ListEmptyComponent={
+            <Text style={{textAlign:'center',marginTop:20,color:'#888'}}>
+              No fee data available.
+            </Text>
+          }
         />
       </View>
     </View>

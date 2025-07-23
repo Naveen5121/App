@@ -2,6 +2,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store,persistor } from './src/redux/store';
 
 
 import Onboarding from './src/screens/Onboarding';
@@ -29,30 +32,34 @@ const Stack = createNativeStackNavigator();
 
 const App=()=> {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Homework">
-        <Stack.Screen name="Onboarding" component={Onboarding} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-        <Stack.Screen name="EnterOtp" component={EnterOtp} />
-        <Stack.Screen name="NewPassword" component={NewPassword} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Menu" component={Menu}/>
-        <Stack.Screen name="Profile" component={Profile}/>
-        <Stack.Screen name="Homework" component={Homework}/>
-        <Stack.Screen name="Attendance" component={Attendance}/>
-        <Stack.Screen name="FeeDetails" component={FeeDetails}/>
-        <Stack.Screen name="Examination" component={Examination}/>
-        <Stack.Screen name="ReportCard" component={ReportCard}/>
-        <Stack.Screen name="Calender" component={Calender}/>
-        <Stack.Screen name="Multimedia" component={Multimedia}/>
-        <Stack.Screen name="AcademicYear" component={AcademicYear}/>
-        <Stack.Screen name="NoticeBoard" component={NoticeBoard}/>
-        <Stack.Screen name="Exam" component={Exam}/>
-        <Stack.Screen name='Report' component={Report}/>
-        <Stack.Screen name='AttendanceMonth' component={AttendanceMonth}/>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Onboarding">
+            <Stack.Screen name="Onboarding" component={Onboarding} />
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+            <Stack.Screen name="EnterOtp" component={EnterOtp} />
+            <Stack.Screen name="NewPassword" component={NewPassword} />
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Menu" component={Menu}/>
+            <Stack.Screen name="Profile" component={Profile}/>
+            <Stack.Screen name="Homework" component={Homework}/>
+            <Stack.Screen name="Attendance" component={Attendance}/>
+            <Stack.Screen name="FeeDetails" component={FeeDetails}/>
+            <Stack.Screen name="Examination" component={Examination}/>
+            <Stack.Screen name="ReportCard" component={ReportCard}/>
+            <Stack.Screen name="Calender" component={Calender}/>
+            <Stack.Screen name="Multimedia" component={Multimedia}/>
+            <Stack.Screen name="AcademicYear" component={AcademicYear}/>
+            <Stack.Screen name="NoticeBoard" component={NoticeBoard}/>
+            <Stack.Screen name="Exam" component={Exam}/>
+            <Stack.Screen name='Report' component={Report}/>
+            <Stack.Screen name='AttendanceMonth' component={AttendanceMonth}/>
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PersistGate>
+    </Provider>
   );
 }
 

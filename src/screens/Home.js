@@ -10,62 +10,19 @@ import {
   ImageBackground,
 } from 'react-native';
 import dayjs from 'dayjs';
-import { notices } from '../../slides'; 
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch,useSelector } from 'react-redux';
+import { toggleHomework } from '../redux/slices/homeSlice';
 
-const initialHomeworkList = [
-  {
-    id: 1,
-    title: 'Learn Chapter 5 with one Essay',
-    subject: 'English',
-    date: dayjs().format('YYYY-MM-DD'),
-    completed: false,
-  },
-  {
-    id: 2,
-    title: 'Exercise Trigonometry 1st topic',
-    subject: 'Maths',
-    date: dayjs().format('YYYY-MM-DD'),
-    completed: true,
-  },
-  {
-    id: 3,
-    title: 'Hindi writing 3 pages',
-    subject: 'Hindi',
-    date: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
-    completed: false,
-  },
-  {
-    id: 4,
-    title: 'Test for History first session',
-    subject: 'Social Science',
-    date: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
-    completed: false,
-  },
-  {
-    id: 5,
-    title: 'Learn Atoms Physics',
-    subject: 'Science',
-    date: '2025-07-07',
-    completed: false,
-  },
-  {
-    id: 6,
-    title: 'English writing 3 pages',
-    subject: 'English',
-    date: '2025-07-06',
-    completed: false,
-  },
-];
 
 const groupHomeworkByDate = (list) => {
-  const grouped = {};
-  list.forEach((item) => {
+    const grouped = {};
+    list.forEach((item) => {
     const itemDate = dayjs(item.date);
     const today = dayjs();
     const yesterday = today.subtract(1, 'day');
 
-    let label = itemDate.format('D MMM YYYY');
+    let label = itemDate.format('DD MM YYYY');
     if (itemDate.isSame(today, 'day')) label = 'Today';
     else if (itemDate.isSame(yesterday, 'day')) label = 'Yesterday';
 
@@ -77,19 +34,22 @@ const groupHomeworkByDate = (list) => {
 
 
 const Home = () => {
-  
-  const navigation = useNavigation();
-  const [homeworks, setHomeworks] = useState(initialHomeworkList);
 
-  const toggleHomework = (id) => {
-    setHomeworks((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, completed: !item.completed } : item
-      )
-    );
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+  const name = useSelector((state)=>state.auth.name)
+  const classSection = useSelector((state)=>state.auth.classSection)
+  const homeworks = useSelector((state)=>state.home.homeworks);
+  const notices = useSelector((state)=>state.home.notices);
+  
+  const groupedHomework=groupHomeworkByDate(homeworks);
+
+  const handleToggleHomework = (id) => {
+    dispatch(toggleHomework(id));
   };
 
-  const groupedHomework = groupHomeworkByDate(homeworks);
+
 
   return (
     <ScrollView style={styles.container}>
@@ -110,8 +70,8 @@ const Home = () => {
 
         {/* User Info */}
         <View>
-          <Text style={styles.name}>Yogita Shaje</Text>
-          <Text style={styles.class}>Class VII B</Text>
+          <Text style={styles.name}>{name || 'Student Name'}</Text>
+          <Text style={styles.class}>{classSection || 'Class Info'}</Text>
         </View>
       </View>
         {/* Profile Image */}
@@ -153,7 +113,7 @@ const Home = () => {
                   styles.homeworkCard,
                   item.completed && styles.homeworkCompleted,
                 ]}
-                onPress={() => toggleHomework(item.id)}
+                onPress={() => handleToggleHomework(item.id)}
               >
                 <View style={styles.row}>
                   <View

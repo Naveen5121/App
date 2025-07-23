@@ -7,10 +7,11 @@ import {
   Image,
   FlatList,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Calendar } from 'react-native-calendars';
 import dayjs from 'dayjs';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 const Calender = () => {
   const navigation = useNavigation();
@@ -18,56 +19,37 @@ const Calender = () => {
   const [selectedDate, setSelectedDate] = useState(currentDate.format('YYYY-MM-DD'));
   const [visibleMonth, setVisibleMonth] = useState(currentDate);
 
-    const handleYearChange = (direction) => {
+  const handleYearChange = (direction) => {
     const newDate = direction === 'up'
       ? currentDate.add(1, 'year')
       : currentDate.subtract(1, 'year');
-      
+
     setCurrentDate(newDate);
     setSelectedDate(newDate.format('YYYY-MM-DD'));
     setVisibleMonth(newDate);
   };
 
+ 
+  const events = useSelector((state) => state.calendar.eventsMap || {});
 
-  const generateEvents = (year) => {
-    return {
-      [`${year}-07-08`]: [
-        { title: 'National Day', type: 'Holiday', color: '#ffe6e6', date: `${year}-07-08` },
-        { title: 'School Function', type: 'Event', color: '#d1f3ff', date: `${year}-07-08` }
-      ],
-      [`${year}-07-09`]: [
-        { title: 'Dean Meeting', type: 'Meeting', color: '#dcfff4', date: `${year}-07-09` }
-      ],
-      [`${year}-07-10`]: [
-        { title: 'Parent-Teacher Meeting', type: 'Event', color: '#ffe6e6', date: `${year}-07-10` }
-      ]
-    };
-  };
 
   const getEventsForVisibleMonth = () => {
-  const month = visibleMonth.format('MM');
-  const year = visibleMonth.format('YYYY');
+    const month = visibleMonth.format('MM');
+    const year = visibleMonth.format('YYYY');
 
-  const allEvents = Object.values(events).flat(); // flatten all event arrays
-  return allEvents.filter(event => {
-    const eventDate = dayjs(event.date);
-    return eventDate.format('MM') === month && eventDate.format('YYYY') === year;
-  });
-};
+    const allEvents = Object.values(events).flat(); 
+    return allEvents.filter(event => {
+      const eventDate = dayjs(event.date);
+      return eventDate.format('MM') === month && eventDate.format('YYYY') === year;
+    });
+  };
 
-  const [events, setEvents] = useState(generateEvents(currentDate.format('YYYY')));
-
-  useEffect(() => {
-    setEvents(generateEvents(currentDate.format('YYYY')));
-  }, [currentDate]);
-
-  
   return (
     <View style={styles.container}>
       {/* Header */}
       <ImageBackground source={require('../assets/union.png')} style={styles.topHalf} resizeMode="cover">
         <View style={styles.header}>
-          <TouchableOpacity onPress={()=>navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={require('../assets/icons/back.png')} style={{ width: 40, height: 40, marginRight: 20 }} />
           </TouchableOpacity>
           <Text style={styles.headtext}>Calendar</Text>
@@ -87,73 +69,59 @@ const Calender = () => {
       <View style={styles.bottomHalf}>
         <Text style={styles.month}>{visibleMonth.format('MMMM YYYY')}</Text>
         <View style={styles.calenderStyle}>
-        <Calendar
-          key = {visibleMonth.format('YYYY-MM')}
-          current={currentDate.format('YYYY-MM-DD')}
-          onDayPress={(day) => setSelectedDate(day.dateString)}
-          onMonthChange = {(month)=>{
-            setVisibleMonth(dayjs(month.dateString));
-          }}
-          onVisibleMonthsChange={(months) => {
-            if (months.length > 0) {
-              setVisibleMonth(dayjs(months[0].dateString));
-            }
-          }}
-          hideExtraDays={true}
-          dayComponent={({ date }) => {
-          const dateStr = date.dateString;
-          const isSelected = dateStr === selectedDate;
-          const hasEvents = events[dateStr];
+          <Calendar
+            key={visibleMonth.format('YYYY-MM')}
+            current={visibleMonth.format('YYYY-MM-DD')}
+            onDayPress={(day) => setSelectedDate(day.dateString)}
+            onMonthChange={(month) => {
+              const newMonth = dayjs(`${month.year}-${String(month.month).padStart(2, '0')}-01`);
+              setVisibleMonth(newMonth);
+            }}
+            hideExtraDays={true}
+            dayComponent={({ date }) => {
+              const dateStr = date.dateString;
+              const isSelected = dateStr === selectedDate;
+              const hasEvents = events[dateStr];
 
-                return (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedDate(dateStr);
+              return (
+                <TouchableOpacity
+                  onPress={() => setSelectedDate(dateStr)}
+                  style={{ alignItems: 'center', marginTop: 4 }}
+                >
+                  <View
+                    style={{
+                      backgroundColor: isSelected ? '#F85A9D' : 'transparent',
+                      borderRadius: 8,
+                      width: 36,
+                      height: 36,
+                      justifyContent: 'center',
+                      alignItems: 'center',
                     }}
-                    style={{ alignItems: 'center', marginTop: 4 }}
                   >
-                    <View
-                      style={{
-                        backgroundColor: isSelected ? '#F85A9D' : 'transparent',
-                        borderRadius: 8,
-                        width: 36,
-                        height: 36,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: isSelected ? 'white' : 'black',
-                          fontWeight: isSelected ? 'bold' : 'normal',
-                        }}
-                      >
-                        {date.day}
-                      </Text>
-                    </View>
-                    {hasEvents && (
-                      <View
-                        style={{
-                          width: 6,
-                          height: 6,
-                          borderRadius: 3,
-                          backgroundColor: 'blue',
-                          marginTop: 2,
-                        }}
-                      />
-                    )}
-                  </TouchableOpacity>
-                );
-              }}           
-            />
-
-
-
+                    <Text style={{
+                      color: isSelected ? 'white' : 'black',
+                      fontWeight: isSelected ? 'bold' : 'normal',
+                    }}>
+                      {date.day}
+                    </Text>
+                  </View>
+                  {hasEvents && (
+                    <View style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: 3,
+                      backgroundColor: 'blue',
+                      marginTop: 2,
+                    }} />
+                  )}
+                </TouchableOpacity>
+              );
+            }}
+          />
         </View>
 
         {/* Events List */}
         <View style={styles.eventList}>
-         
           <FlatList
             data={getEventsForVisibleMonth()}
             keyExtractor={(item, index) => item.title + index}
@@ -170,7 +138,7 @@ const Calender = () => {
               </View>
             )}
             ListEmptyComponent={
-              <Text style={styles.noEventsText}>No events for this day</Text>
+              <Text style={styles.noEventsText}>No events for this month</Text>
             }
             contentContainerStyle={{ paddingBottom: 16 }}
           />
@@ -238,12 +206,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 10,
-  },
-  eventHeader: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#473f97',
-    marginBottom: 10,
   },
   eventRow: {
     flexDirection: 'row',

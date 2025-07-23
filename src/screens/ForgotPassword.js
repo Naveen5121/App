@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,32 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { generateOtp, setPhone } from '../redux/slices/userSlice';
 
 const ForgotPassword = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const [phone,setPhoneInput] = useState('');
+
+  const handleGenerateOtp = () => {
+    if(phone.length===10){
+      dispatch(setPhone(phone));
+      dispatch(generateOtp());
+      navigation.navigate('EnterOtp');
+    }else{
+      Alert.alert(
+        'Invalid Phone number',
+        'Please enter a valid phone number',
+        [{ text: 'Cancel', style: 'cancel' }],
+        { cancelable: true }
+    );
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -40,13 +60,16 @@ const ForgotPassword = () => {
               placeholder="9812345678"
               keyboardType="phone-pad"
               placeholderTextColor="#D1D1D1"
+              maxLength={10}
+              value={phone}
+              onChangeText={(text)=>setPhoneInput(text)}
             />
           </View>
         </View>
 
              {/* Sign In Button */} 
     <View style={{ marginTop: 100 }}>
-        <TouchableOpacity style={styles.signInButton} onPress={()=>navigation.navigate('EnterOtp')}>
+        <TouchableOpacity style={styles.signInButton} onPress={handleGenerateOtp}>
           <Text style={styles.generateotp}>Generate OTP</Text>
         </TouchableOpacity>
 

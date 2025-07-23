@@ -2,13 +2,13 @@ import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react
 import React from 'react'
 import { icons } from '../../slides'
 import { useNavigation } from '@react-navigation/native'
-
-
-
+import { useSelector } from 'react-redux'
 
 const Menu = () => {
     
     const navigation =  useNavigation();
+    const name = useSelector((state)=>state.auth.name);
+    const classSection = useSelector((state)=>state.auth.classSection);
 
   return (
    <View style={styles.container}>
@@ -17,8 +17,8 @@ const Menu = () => {
         <View style={styles.profile}>
             <Image source={require('../assets/icons/user.png')} style={styles.user}/>
             <View>
-                <Text style={styles.name}>Naveen</Text>
-                <Text style={styles.class}>Class 7 B</Text>
+                <Text style={styles.name}>{name}</Text>
+                <Text style={styles.class}>{classSection}</Text>
             </View>
         </View>
         <TouchableOpacity onPress={()=>navigation.navigate('Home')}>
