@@ -27,6 +27,7 @@ import NoticeBoard from './src/screens/NoticeBoard';
 import Exam from './src/screens/Exam';
 import Report from './src/screens/Report';
 import AttendanceMonth from './src/screens/AttendanceMonth';
+import BootSplash from 'react-native-bootsplash';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,7 +35,8 @@ const App=()=> {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <NavigationContainer>
+        <NavigationContainer 
+        onReady={async()=> await BootSplash.hide({fade:true})}>
           <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Onboarding">
             <Stack.Screen name="Onboarding" component={Onboarding} />
             <Stack.Screen name="Login" component={Login} />
